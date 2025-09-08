@@ -268,7 +268,7 @@ const Profile = () => {
                   htmlFor="user-name"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Twitter
+                  X (twitter)
                 </label>
                 {isLoading ? null : (
                   <input
@@ -279,7 +279,7 @@ const Profile = () => {
                   />
                 )}
                 <p className="text-xs font-normal text-gray-500">
-                  URL of your personal Twitter
+                  URL of your personal X
                 </p>
               </div>
             </fieldset>
