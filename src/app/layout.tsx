@@ -8,7 +8,7 @@ import { ReactQueryProvider } from "./ReactQueryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Dashboard Politicozen",
+  title: "Dashboard PoliticoZen",
   description: "Create your products",
 };
 

@@ -154,7 +154,7 @@ export default function ResetPasswordPage() {
           href={process.env.NEXT_PUBLIC_BASE_URL_ECOMMERCE!}
           className="relative z-20 flex items-center text-lg font-medium"
         >
-          Politicozen
+          PoliticoZen
         </Link>
       </div>
 
