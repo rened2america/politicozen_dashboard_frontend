@@ -39,6 +39,13 @@ const postResetPassword = async (data: ResetPasswordData) => {
 
   return res;
 };
+const postResetPasswordWhileLoggedIn = async (data: ResetPasswordData) => {
+  const res = await axios.post("auth/resetPasswordIn", data).then((res) => {
+    return res;
+  });
+
+  return res;
+};
 
 
 export const useUserLogin = () => {
@@ -51,4 +58,8 @@ export const useForgotPassword = () => {
 
 export const useResetPassword = () => {
   return useMutation((data: ResetPasswordData) => postResetPassword(data), {});
+};
+
+export const useResetPasswordWhileLoggedIn = () => {
+  return useMutation((data: ResetPasswordData) => postResetPasswordWhileLoggedIn(data), {});
 };

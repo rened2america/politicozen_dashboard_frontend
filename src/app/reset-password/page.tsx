@@ -8,18 +8,45 @@ import { buttonVariants, Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SyncLoader from "react-spinners/SyncLoader";
-import { useResetPassword } from "../login/useUserLogin";
+import { useResetPassword, useResetPasswordWhileLoggedIn } from "../login/useUserLogin";
 
 // Import Zod
 import { z } from "zod";
+import { useGetProfile } from "../dashboard/settings/profile/useProfile";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // Extract email/token from URL
-  const email = searchParams.get("email") || "";
-  const token = searchParams.get("token") || "";
+  const searchParams = useSearchParams();
+  const hasResetLink = Boolean(searchParams.get("email") && searchParams.get("token"));
+
+  // Only call useGetProfile when we DON'T have a reset link
+  const { refetch, data: user, isLoading: isProfileLoading } = useGetProfile({ 
+    enabled: !hasResetLink,
+    // Add these options to prevent unwanted refetches
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+
+  // Initialize email and token from URL params
+  const urlEmail = searchParams.get("email") || "";
+  const urlToken = searchParams.get("token") || "";
+
+  // Determine email based on whether user is logged in or using reset link
+  const email = hasResetLink ? urlEmail : user?.data?.getArtist?.email;
+  const token = hasResetLink ? urlToken : null;
+
+  const resetWhileLoggedIn = useResetPasswordWhileLoggedIn();
+  const resetWithToken = useResetPassword();
+
+  const isLoggedIn = Boolean(user) && !hasResetLink;
+
+  const resetPassword = isLoggedIn ? resetWhileLoggedIn.mutate : resetWithToken.mutate;
+  const isLoading = (isLoggedIn ? resetWhileLoggedIn.isLoading : resetWithToken.isLoading) || 
+                    (!hasResetLink && isProfileLoading);
+  const isSuccess = isLoggedIn ? resetWhileLoggedIn.isSuccess : resetWithToken.isSuccess;
 
   // Local state for passwords
   const [password, setPassword] = React.useState("");
@@ -28,16 +55,18 @@ export default function ResetPasswordPage() {
   // Local state for errors
   const [zodError, setZodError] = React.useState<string | null>(null);
 
-  // Custom mutation hook
-  const { mutate: resetPassword, isLoading, isSuccess } = useResetPassword();
-
   // On success, alert + redirect
   React.useEffect(() => {
     if (isSuccess) {
+      if (isLoggedIn) {
+        alert("Password reset successful! Click ok to redirect to your profile...");
+        router.push("/dashboard/settings/profile");
+      } else {
         alert("Password reset successful! Click ok to redirect to Login page...");
         router.push("/login");
+      }
     }
-  }, [isSuccess, router]);
+  }, [isSuccess, isLoggedIn, router]);
 
   // Handle form submission
   async function onSubmit(event: React.SyntheticEvent) {
@@ -73,18 +102,36 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    // 4) Ensure valid email/token
-    if (!email || !token) {
-      setZodError("Invalid reset link or missing parameters.");
-      return;
+    // 4) Validate email and token requirements
+    if (hasResetLink) {
+      // Using reset link - need email and token from URL
+      if (!urlEmail || !urlToken) {
+        setZodError("Invalid reset link or missing parameters.");
+        return;
+      }
+    } else {
+      // Logged in user - need email from profile
+      if (!email) {
+        setZodError("Email not set on your account. Contact Support!");
+        return;
+      }
     }
 
     // 5) Call our mutation
     resetPassword({
-      email,
-      token,
+      email: email,
+      token: token,
       password: result.data.password,
     });
+  }
+
+  // Show loading state while fetching profile (only when not using reset link)
+  if (!hasResetLink && isProfileLoading) {
+    return (
+      <div className="container flex h-screen items-center justify-center">
+        <SyncLoader loading={true} color="gray" size={12} />
+      </div>
+    );
   }
 
   return (
@@ -119,13 +166,30 @@ export default function ResetPasswordPage() {
               Reset Password
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your new password below.
+              {hasResetLink 
+                ? `Enter your new password for ${urlEmail}` 
+                : "Enter your new password below."
+              }
             </p>
           </div>
 
           <div className="grid gap-6">
             <form onSubmit={onSubmit}>
               <div className="grid gap-2">
+                {/* Show email for reset link users */}
+                {hasResetLink && (
+                  <div className="grid gap-1">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={urlEmail}
+                      disabled={true}
+                      className="bg-muted"
+                    />
+                  </div>
+                )}
+
                 {/* New password */}
                 <div className="grid gap-1">
                   <Label className="sr-only" htmlFor="password">

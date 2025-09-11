@@ -126,6 +126,7 @@ const Profile = () => {
                   : "url(https://assets.ghost.io/admin/1585/assets/img/user-image-639a88b784fb5f10964be8b975ca9fdf.png)",
               }}
             ></div>
+            <div className="flex gap-2">
 
             <div
               style={{
@@ -138,11 +139,16 @@ const Profile = () => {
                 borderRadius: "4px",
                 marginTop: "8px",
                 cursor: "pointer",
+                
               }}
-              {...getRootPropsAvatar({ className: "dropzone" })}
+              {...getRootPropsAvatar({ className: "dropzone w-fit" })}
             >
               <input {...getInputPropsAvatar()} />
               Change image
+            </div>
+            <a className="w-full p-3 bg-gray-300" href="/reset-password">
+              Change password
+            </a>
             </div>
           </figure>
           <div className="border border-[#e6e9eb] mt-[144px] grid grid-rows-1 rounded-[12px] p-[24px]">

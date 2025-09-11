@@ -38,16 +38,38 @@ export const useUploadBanner = () => {
 };
 
 const getProfile = async () => {
-  const res = await axios.get("artist/profile").then((res) => {
+  try {
+    const res = await axios.get("artist/profile");
+    console.log(res);
     return res;
-  });
-  console.log(res);
-  return res;
+  } catch (error) {
+    // If 401 or any auth error, throw it to let React Query handle it
+    if (error.response?.status === 401) {
+      throw new Error('Unauthorized');
+    }
+    // For other errors, re-throw to let React Query handle retries
+    throw error;
+  }
 };
 
-export const useGetProfile = () => {
+export const useGetProfile = (options?: any) => {
   return useQuery(["profile"], getProfile, {
     refetchOnWindowFocus: false,
+    retry: (failureCount, error) => {
+      // Don't retry on auth errors
+      if (error.message === 'Unauthorized') {
+        return false;
+      }
+      // Retry other errors up to 3 times
+      return failureCount < 3;
+    },
+    // Set data to null on auth errors
+    onError: (error) => {
+      if (error.message === 'Unauthorized') {
+        console.log('User not authenticated');
+      }
+    },
+    ...options,
   });
 };
 
