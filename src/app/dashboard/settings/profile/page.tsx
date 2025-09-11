@@ -128,32 +128,35 @@ const Profile = () => {
             ></div>
             <div className="flex gap-2">
 
-            <div
-              style={{
-                display: "grid",
-                alignItems: "center",
-                justifyItems: "center",
-                padding: "8px 16px",
-                backgroundColor: "rgba(0,0,0,0.5)",
-                color: "white",
-                borderRadius: "4px",
-                marginTop: "8px",
-                cursor: "pointer",
-                
-              }}
-              {...getRootPropsAvatar({ className: "dropzone w-fit" })}
-            >
-              <input {...getInputPropsAvatar()} />
-              Change image
-            </div>
-            <a className="w-full p-3 bg-gray-300" href="/reset-password">
-              Change password
-            </a>
+              <div
+                style={{
+                  display: "grid",
+                  alignItems: "center",
+                  justifyItems: "center",
+                  padding: "8px 16px",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  color: "white",
+                  borderRadius: "4px",
+                  marginTop: "8px",
+                  cursor: "pointer",
+
+                }}
+                {...getRootPropsAvatar({ className: "dropzone w-fit" })}
+              >
+                <input {...getInputPropsAvatar()} />
+                Change image
+              </div>
             </div>
           </figure>
           <div className="border border-[#e6e9eb] mt-[144px] grid grid-rows-1 rounded-[12px] p-[24px]">
-            <div className="border-b border-[#37352f1a] text-[16px] text-[#37352f] mb-[24px] h-[40px] mx-auto w-full max-w-[540px] font-bold">
-              My profile
+            <div className="mx-auto w-full max-w-[540px] flex items-center justify-between h-[40px] mb-[24px] border-b border-[#37352f1a]">
+              <span className="text-[16px] text-[#37352f] font-bold">My profile</span>
+              <a
+                href="/reset-password"
+                className="bg-green-500 shrink-0 text-[13px] font-medium px-3 py-1.5 rounded-md border border-[#dddedf] hover:bg-green-400"
+              >
+                Change password
+              </a>
             </div>
             <fieldset className="max-w-[540px] grid grid-rows-[100px_100px_100px] gap-[16px] my-[16px] mx-auto w-full">
               <div className="grid grid-rows-[16px_48px_16px] items-center">
@@ -220,14 +223,14 @@ const Profile = () => {
             </div>
             <fieldset
               className="max-w-[540px] grid grid-rows-[100px_100px_100px] gap-[16px] my-[16px] mx-auto w-full"
-              // style={{
-              //   maxWidth: "540px",
-              //   display: "grid",
-              //   gridTemplateRows: "100px 100px 100px",
-              //   gap: "16px",
-              //   margin: "16px auto",
-              //   width: "100%",
-              // }}
+            // style={{
+            //   maxWidth: "540px",
+            //   display: "grid",
+            //   gridTemplateRows: "100px 100px 100px",
+            //   gap: "16px",
+            //   margin: "16px auto",
+            //   width: "100%",
+            // }}
             >
               <div className="grid grid-rows-3 gap-2 items-center">
                 <label
